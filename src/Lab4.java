@@ -1,20 +1,15 @@
-import java.io.File;
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.util.ArrayList;
 
 public class Lab4 {
+	
+	private SQLStatementBuilder builder;
+	
+	public Lab4() {
+		builder = new SQLStatementBuilder();		
+	}
 
-	public void sqlConnect() {
+	public String sqlConnect(String query, int type) {
 
 		Connection con = null;
 
@@ -29,35 +24,106 @@ public class Lab4 {
 			// database named 'user' on the faure.
 			String url = "jdbc:mysql://localhost:18081/jcedward";
 
-			// Get a connection to the database for a
-			// user named 'user' with the password
-			// 123456789.
+			// Get a connection to the database
 			con = DriverManager.getConnection(url, "jcedward", "830594668");
 
 			// Display URL and connection information
-			System.out.println("URL: " + url);
-			System.out.println("Connection: " + con);
+			//System.out.println("URL: " + url);
+			//System.out.println("Connection: " + con);
 
 			// Get a Statement object
 			stmt = con.createStatement();
+			
+			// query if book exists
+			if (type == 1) {
+				try {
+					rs = stmt.executeQuery(query);
+					rs.next();
+					return(rs.getString("b.ISBN"));
+				} catch (Exception e) {
+					System.out.print(e);
+					System.out.println("ISBN does not exist");
+				}				
+			}
+			// query if a checkout record exists
+			else if (type == 2) {
+				try {
+					rs = stmt.executeQuery(query);
+					rs.next();
+					return rs.getString("b.ISBN") + rs.getString("b.MemberID");					
+				} catch (Exception e) {
+					System.out.print(e);
+					System.out.println("No book checkout record");
+				}	
+				
+				
 
-			try {
-				rs = stmt.executeQuery("SELECT * FROM author");
-				while (rs.next()) {
-					System.out.println(rs.getString("authorID") + " " + rs.getString("last_name") + ", "
-							+ rs.getString("first_name"));
-				}
-			} catch (Exception e) {
-				System.out.print(e);
-				System.out.println("No Author table to query");
-			} // end catch
+				
+			}
+			else {
+				// nothing
+				return "";
+			}
+			
+
 
 			con.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 
 		}
+		
+		return "";
+	}
+	
+	public void updateBooks(ArrayList<BorrowedTuple> books) {
+		
+		// we now have all the books read in from the XML file
+		// one by one we need to update the borrowed table
+		
+		
+		
+		for (BorrowedTuple b : books) {
+			// first we need to check that the book exists
+			String bookExistQuery = builder.bookExistQuery(b);
 
+			System.out.println(bookExistQuery);
+			
+			if(!sqlConnect(bookExistQuery,1).isEmpty()) {
+				
+				System.out.println("Book Exists");
+				// book exists, now see if the record is a checkin or checkout
+				if(b.getCheckin_date().equals("N/A")) {
+					
+				}				
+				else {
+					// ok its a checkin record, we must check to see
+					// if the corresponding checkout record exists
+					// check for ISBN and MemberID
+					String verifyCheckout = builder.verifyChekout_dateQuery(b);
+					System.out.println(" " + verifyCheckout);
+					System.out.println(sqlConnect(verifyCheckout, 2));					
+				}
+				
+			}
+			else {
+				System.err.println("Book does not exit, moving on to next record");
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		}
+		
+		
+		
+		
 	}
 	
 
@@ -68,9 +134,9 @@ public class Lab4 {
 		
 		Lab4 lab4 = new Lab4();
 		ReadXML reader = new ReadXML();
-		lab4.sqlConnect();
 		reader.readXML(args[0]);
-		reader.printBooks();
+		//reader.printBooks();
+		lab4.updateBooks(reader.getBorrowedBooksList());
 
 	}// end main
 

@@ -18,6 +18,10 @@ public class ReadXML {
 	public ReadXML() {
 		borrowedBooks = new ArrayList<BorrowedTuple>();
 	}
+	
+	public ArrayList<BorrowedTuple> getBorrowedBooksList () {
+		return this.borrowedBooks;
+	}
 
 	public String formatDate(String date) {
 		if (date.equals("N/A"))

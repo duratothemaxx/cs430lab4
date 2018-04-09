@@ -35,6 +35,6 @@ public class SQLStatementBuilder {
 		return "UPDATE borrowed b set b.Checkin_date='"
 				+ b.getCheckin_date() + "' WHERE b.ISBN='"
 				+ b.getISBN() + "' and b.MemberID='"
-				+ b.getID() + "';";
+				+ b.getID() + "' and b.Checkout_date=NULL;";
 	}
 }

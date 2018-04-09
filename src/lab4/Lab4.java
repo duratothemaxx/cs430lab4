@@ -25,7 +25,7 @@ public class Lab4 {
 
 			// Define URL of database server for
 			// database named 'user' on the faure.
-			String url = "jdbc:mysql://localhost:18081/jcedward";
+			String url = "jdbc:mysql://faure/jcedward";
 
 			// Get a connection to the database
 			con = DriverManager.getConnection(url, "jcedward", "830594668");
@@ -75,7 +75,7 @@ public class Lab4 {
 				return "" + stmt.executeUpdate(query);
 
 			}
-			// update borrowed, checking record
+			// update borrowed, checkin record
 			else if (type == 5) {
 				return "" + stmt.executeUpdate(query);
 			} else {

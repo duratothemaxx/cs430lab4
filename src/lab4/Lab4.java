@@ -25,7 +25,7 @@ public class Lab4 {
 
 			// Define URL of database server for
 			// database named 'user' on the faure.
-			String url = "jdbc:mysql://faure/jcedward";
+			String url = "jdbc:mysql://localhost:18081/jcedward";
 
 			// Get a connection to the database
 			con = DriverManager.getConnection(url, "jcedward", "830594668");
@@ -141,8 +141,11 @@ public class Lab4 {
 					//System.out.println(" verified book: " + sqlConnect(verifyCheckout, 2));
 					String returnBookStmt = builder.updateCheckinRecord(b);
 					//System.out.println(" Checkin update stmt: " + returnBookStmt);
-					if(sqlConnect(returnBookStmt, 5).equals("1"))
+					int result = Integer.parseInt(sqlConnect(returnBookStmt, 5));
+					if(result == 1)
 						System.out.println("Checkin record update successfully");
+					if(result == 0)
+						System.out.println("No record updated");
 				}				
 			}		
 			System.out.println("----------------------------------------------");
